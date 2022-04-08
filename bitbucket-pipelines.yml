@@ -1,0 +1,26 @@
+image: alpine/helm
+pipelines:
+  
+  pull-requests:
+    '**':
+    - step:
+        name: PR
+        script:
+        - helm lint .
+
+  branches:
+    dev: &builds
+    - step:
+        script:
+          - REGISTRY=acrentechdcentriq
+          - NAME=$(helm show chart . | awk '/name/ {print $2}')
+          - VERSION=$(helm show chart . | awk '/version/ {print $2}')
+          - helm package .
+          - pipe: microsoft/azure-cli-run:1.1.0
+            variables:
+              AZURE_APP_ID: $AZURE_APP_ID
+              AZURE_PASSWORD: $AZURE_PASSWORD
+              AZURE_TENANT_ID: $AZURE_TENANT_ID
+              CLI_COMMAND: "az acr helm push -n $REGISTRY $NAME-$VERSION.tgz"
+    
+    release/*: *builds

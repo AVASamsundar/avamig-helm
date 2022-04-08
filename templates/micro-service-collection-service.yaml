@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: micro-service-collection-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.mcrsvccoll.replicas }}
+  selector:
+    matchLabels:
+      app: micro-service-collection-service
+  template:
+    metadata:
+      labels:
+        app: micro-service-collection-service
+    spec:
+      containers:
+      - name: micro-service-collection-service
+        image: {{ .Values.registryServer }}/micro-service-collection-service:{{ .Values.mcrsvccoll.image }}
+        imagePullPolicy: Always
+        - configMapRef:
+            name: common-config
+        - secretRef:
+            name: avas2tecr
+        ports:
+        - containerPort: {{ .Values.mcrsvccoll.containerPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: micro-service-collection-service-svc
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.mcrsvccoll.port }}
+  selector:
+    app: micro-service-collection-service

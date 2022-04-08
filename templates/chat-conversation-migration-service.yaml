@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-conversation-migration-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.chatconversation.replicas }}
+  selector:
+    matchLabels:
+      app: chat-conversation-migration-service
+  template:
+    metadata:
+      labels:
+        app: chat-conversation-migration-service
+    spec:
+      containers:
+      - name: chat-conversation-migration-service
+        image: {{ .Values.registryServer }}/chat-conversation-migration-service:{{ .Values.chatconversation.image }}
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: common-config
+        - secretRef:
+            name: avas2tecr 
+        ports:
+        - containerPort: {{ .Values.chatconversation.containerPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-conversation-migration-service-svc
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.channelconversation.port }}
+  selector:
+    app: chat-conversation-migration-service

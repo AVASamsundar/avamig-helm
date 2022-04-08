@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slack-inventory-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.slackinventory.replicas }}
+  selector:
+    matchLabels:
+      app: slack-inventory-service
+  template:
+    metadata:
+      labels:
+        app: slack-inventory-service
+    spec:
+      containers:
+      - name: slack-inventory-service
+        image: {{ .Values.registryServer }}/slack-inventory-service:{{ .Values.slackinventory.image }}
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: common-config
+        - secretRef:
+            name: avas2tecr
+        ports:
+        - containerPort: {{ .Values.slackinventory.containerPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slack-inventory-service-svc
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.slackinventory.port }}
+  selector:
+    app: slack-inventory-service

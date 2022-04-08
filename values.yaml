@@ -1,0 +1,48 @@
+registryServer: avamigs2tacr.azurecr.io
+namespace: prod
+channelconversation:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 5000
+  port: 5000
+channelmigration:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 3001
+  port: 3001
+chatconversation:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 9000
+  port: 9000
+groupchatmigration:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 7000
+  port: 7000
+inventoryservice:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 4000
+  port: 4000
+mcrsvccoll:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 3000
+  port: 3000
+membermigration:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 12000
+  port: 12000
+serviceadminportal:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 8000
+  port: 8000
+slackinventory:
+  image: 0.0.0
+  replicas: 1
+  containerPort: 8080
+  port: 8080
+processorDeploymentStrategy: Recreate

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: channel-migration-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.channelmigration.replicas }}
+  selector:
+    matchLabels:
+      app: channel-migration-service
+  template:
+    metadata:
+      labels:
+        app: channel-migration-service
+    spec:
+      containers:
+      - name: channel-migration-service
+        image: {{ .Values.registryServer }}/channel-migration-service:{{ .Values.channelmigration.image }}
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: common-config
+        - secretRef:
+            name: avas2tecr 
+        ports:
+        - containerPort: {{ .Values.channelmigration.containerPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: channel-migration-service-svc
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.channelmigration.containerPort }}
+  selector:
+    app: channel-migration-service

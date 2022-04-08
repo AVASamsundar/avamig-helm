@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-admin-portal-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.serviceadminportal.replicas }}
+  selector:
+    matchLabels:
+      app: service-admin-portal-service
+  template:
+    metadata:
+      labels:
+        app: service-admin-portal-service
+    spec:
+      containers:
+      - name: service-admin-portal-service
+        image: {{ .Values.registryServer }}/service-admin-portal-service:{{ .Values.serviceadminportal.image }}
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: common-config
+        - secretRef:
+            name: avas2tecr
+        ports:
+        - containerPort: {{ .Values.serviceadminportal.containerPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-admin-portal-service-svc
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.serviceadminportal.port }}
+  selector:
+    app: service-admin-portal-service

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.inventoryservice.replicas }}
+  selector:
+    matchLabels:
+      app: inventory-service
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+      - name: inventory-service
+        image: {{ .Values.registryServer }}/inventory-service:{{ .Values.inventoryservice.image }}
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: common-config
+        - secretRef:
+            name: avas2tecr
+        ports:
+        - containerPort: {{ .Values.inventoryservice.containerPort }} 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service-svc
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.inventoryservice.port }}
+  selector:
+    app: inventory-service
